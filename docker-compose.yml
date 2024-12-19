@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  migpt:
+    build: .
+    container_name: migpt
+    restart: unless-stopped
+    environment:
+      - MI_USER=${MI_USER}
+      - MI_PASS=${MI_PASS}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SOUND_TYPE=${SOUND_TYPE}
+    volumes:
+      - ./data:/app/data  # 用于持久化存储token等数据
+    networks:
+      - migpt_net
+
+networks:
+  migpt_net:
+    driver: bridge
