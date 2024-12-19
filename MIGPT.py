@@ -10,7 +10,7 @@ from aiohttp import ClientSession
 from minaservice import MiNAService
 from miaccount import MiAccount
 from requests.utils import cookiejar_from_dict
-from V3 import Chatbot
+from chatbot import Chatbot
 # 导入常量和验证器
 from constants import (
     LATEST_ASK_API, 
