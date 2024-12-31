@@ -1,5 +1,5 @@
 import sys
-from constants import HARDWARE_COMMAND_DICT, CONFIG_ITEMS
+from constants import HARDWARE_COMMAND_DICT, CONFIG_ITEMS, MODEL_MAPPING
 
 class ConfigValidator:
     @staticmethod
@@ -25,6 +25,15 @@ class ConfigValidator:
             raise ValueError(
                 f"不支持的音箱型号: {sound_type}\n"
                 f"支持的型号列表:\n{supported_types}"
+            )
+        
+        # 检查模型是否支持
+        model = CONFIG_ITEMS["MODEL"][0]
+        if model not in MODEL_MAPPING:
+            supported_models = "\n".join(f"- {k}: {v}" for k, v in MODEL_MAPPING.items())
+            raise ValueError(
+                f"不支持的模型: {model}\n"
+                f"支持的模型列表:\n{supported_models}"
             )
         
         return {k: v[0] for k, v in CONFIG_ITEMS.items()}

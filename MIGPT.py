@@ -27,6 +27,7 @@ MI_USER = config["MI_USER"]
 MI_PASS = config["MI_PASS"]
 OPENAI_API_KEY = config["OPENAI_API_KEY"]
 SOUND_TYPE = config["SOUND_TYPE"]
+ENGINE = config["MODEL"]
 
 # loop = asyncio.get_event_loop()
 
@@ -114,7 +115,7 @@ class MiGPT:
     async def _init_first_data_and_chatbot(self):
         data = await self.get_latest_ask_from_xiaoai()
         self.last_timestamp, self.last_record = self.get_last_timestamp_and_record(data)
-        self.chatbot = Chatbot(api_key=OPENAI_API_KEY)
+        self.chatbot = Chatbot(api_key=OPENAI_API_KEY, engine=ENGINE)
 
     async def get_latest_ask_from_xiaoai(self):
         r = await self.session.get(

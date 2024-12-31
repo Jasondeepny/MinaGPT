@@ -3,8 +3,9 @@ A simple wrapper for the official ChatGPT API
 """
 import json
 import requests
-# import tiktoken
+import tiktoken
 import transformers
+from constants import MODEL_MAPPING
 
 class Chatbot:
     """
@@ -14,7 +15,7 @@ class Chatbot:
     def __init__(
             self,
             api_key: str,
-            engine: str = "deepseek-chat",
+            engine: str = "openai",
             proxy: str = None,
             max_tokens: int = 3000,
             temperature: float = 0.5,
@@ -31,7 +32,6 @@ class Chatbot:
         self.session = requests.Session()
         self.api_key = api_key
         self.proxy = proxy
-
         self.system_prompt = system_prompt
         self.max_tokens = max_tokens
         self.temperature = temperature
@@ -61,14 +61,17 @@ class Chatbot:
         if max_tokens > 4000:
             raise Exception("Max tokens cannot be greater than 4000")
 
+        if self.engine == "openai":
+            self.tokenizer = tiktoken.encoding_for_model(MODEL_MAPPING[self.engine][1])       
+        else:
         # 初始化 DeepSeek tokenizer
-        try:
-            self.tokenizer = transformers.AutoTokenizer.from_pretrained(
-                "./",  # tokenizer文件目录
-                trust_remote_code=True
-            )
-        except Exception as e:
-            raise Exception(f"Failed to initialize tokenizer: {str(e)}")
+            try:
+                self.tokenizer = transformers.AutoTokenizer.from_pretrained(
+                    "./",  # tokenizer文件目录
+                    trust_remote_code=True
+                )
+            except Exception as e:
+                    raise Exception(f"Failed to initialize tokenizer: {str(e)}")
 
         if self.get_token_count("default") > self.max_tokens:
             raise Exception("System prompt is too long")
@@ -99,10 +102,10 @@ class Chatbot:
                 break
 
     # https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
-    # 改使用 DeepSeek tokenizer(本地) 计算 token 数量
+    #openai使用官方tokenizer计算token, 其他开源模型使用transformers计算
     def get_token_count(self, convo_id: str = "default") -> int:
         """
-        Get token count using DeepSeek tokenizer
+        Get token count using tokenizer
         """
         num_tokens = 0
         for message in self.conversation[convo_id]:
@@ -140,11 +143,10 @@ class Chatbot:
         self.__truncate_conversation(convo_id=convo_id)
         # Get response
         response = self.session.post(
-            # "https://api.openai.com/v1/chat/completions",
-            "https://api.deepseek.com/chat/completions",
+            MODEL_MAPPING[self.engine][0],           
             headers={"Authorization": f"Bearer {self.api_key}"},
             json={
-                "model": self.engine,
+                "model": MODEL_MAPPING[self.engine][1],
                 "messages": self.conversation[convo_id],
                 "stream": True,
                 "temperature": self.temperature,

@@ -21,12 +21,23 @@ HARDWARE_COMMAND_DICT = {
     # ...add more here
 }
 
+# 模型映射
+MODEL_MAPPING = {
+    "openai": ["https://api.openai.com/v1/chat/completions", "gpt-4o-mini"],
+    "deepseek": ["https://api.deepseek.com/chat/completions", "deepseek-chat"],
+    "gemini": [
+        "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "gemini-2.0-flash-exp",
+    ],
+}
+
 # 配置项
 CONFIG_ITEMS = {
     "MI_USER": (os.getenv("MI_USER", ""), "小米账号"),
     "MI_PASS": (os.getenv("MI_PASS", ""), "小米账号密码"),
     "OPENAI_API_KEY": (os.getenv("OPENAI_API_KEY", ""), "OpenAI API Key"),
-    "SOUND_TYPE": (os.getenv("SOUND_TYPE", ""), "音箱型号")
+    "SOUND_TYPE": (os.getenv("SOUND_TYPE", ""), "音箱型号"),
+    "MODEL": (os.getenv("MODEL", ""), "模型")
 }
 
 # GPT相关配置
